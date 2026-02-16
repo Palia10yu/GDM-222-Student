@@ -16,18 +16,15 @@ namespace Solution
                 GetComponent<SpriteRenderer>().color = Color.blue;
             }
         }
-        public override void Hit(Identity hitBy)
+        public override void Hit(Identity hitby)
         {
-            if (IsIceWall)
+            base.Hit(hitby);
+            if (hitby is OOPPlayer)
             {
-                mapGenerator.playerScript.TakeDamage(Damage, IsIceWall);
+                OOPPlayer p = hitby as OOPPlayer;
+                p.TakeDamage(Damage);
+                Debug.Log("Hit Wall");
             }
-            else
-            {
-                mapGenerator.playerScript.TakeDamage(Damage);
-            }
-            mapGenerator.mapdata[positionX, positionY] = null;
-            Destroy(gameObject);
         }
     }
 }

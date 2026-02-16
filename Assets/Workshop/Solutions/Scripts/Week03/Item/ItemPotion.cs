@@ -1,18 +1,22 @@
+using System.IO;
 using UnityEngine;
 
 namespace Solution
 {
-    [CreateAssetMenu(fileName = "PotionItem", menuName = "Items/PotionItem")]
+    [CreateAssetMenu(fileName = "ItemPotion", menuName = "Item/ItemPotion")]
     public class ItemPotion : ItemData
     {
-        public int healPoint = 10;
+       public int healPoint = 10;
 
         public override void Use(Identity identity)
         {
-            Debug.Log($"¿×é¹¿Ù¾ÅÑ§ªÕÇÔµ {healPoint} ´éÇÂ {ItemName}");
-            var player = identity as OOPPlayer;
-            player.Heal(healPoint);
-            Debug.Log("You got " + ItemName + " heal : " + healPoint);
+            base.Use(identity);
+            {
+                base.Use(identity);
+                OOPPlayer p = identity as OOPPlayer;
+                p.Heal(healPoint);
+                Debug.Log("You got" + ItemName);
+            }
         }
     }
 }

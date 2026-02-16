@@ -5,12 +5,15 @@ namespace Solution
     public class OOPExit : Identity
     {
         public GameObject YouWin;
-
-        public override void Hit(Identity hitBy)
+       public override void Hit(Identity hitby)
         {
-            mapGenerator.playerScript.enabled = false;
-            YouWin.SetActive(true);
-            Debug.Log("You win");
+            base.Hit(hitby);
+            if (hitby is OOPPlayer)
+            {
+                mapGenerator.UpdatePositionIdentity(hitby,positionX,positionY);
+                YouWin.gameObject.SetActive(true);
+                hitby.enabled = false;
+            }
         }
     }
 }

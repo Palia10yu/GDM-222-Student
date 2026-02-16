@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Solution
 {
 
-    public class Identity : MonoBehaviour
+    public abstract class Identity : MonoBehaviour
     {
         [Header("Identity")]
         public string Name;

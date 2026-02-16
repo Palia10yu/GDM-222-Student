@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Solution
 {
-    [CreateAssetMenu(fileName = "NewItemData", menuName = "ScriptableObjects/ItemData")]
     public abstract class ItemData : ScriptableObject
     {
         public string ItemName;

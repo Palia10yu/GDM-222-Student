@@ -2,20 +2,17 @@ using UnityEngine;
 
 namespace Solution
 {
-    [CreateAssetMenu(fileName = "KeyItem", menuName = "Items/KeyItem")]
+    [CreateAssetMenu(fileName = "ItemKey", menuName = "Item/ItemKey")]
     public class ItemKey : ItemData
     {
-        public int ID;
-      
         public override void Use(Identity identity)
         {
-            OOPPlayer player = identity as OOPPlayer;
-            if (player != null)
+            base.Use(identity);
             {
-                player.inventory.AddItem(this,1);
+                base.Use(identity);
+                OOPPlayer p = identity as OOPPlayer;
+                Debug.Log("You got " + ItemName);
             }
-
         }
-
     }
 }

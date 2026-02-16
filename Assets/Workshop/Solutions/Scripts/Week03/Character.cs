@@ -1,5 +1,7 @@
+using Unity.VisualScripting;
 using UnityEngine;
-
+using UnityEngine.XR;
+using Workshop.Solution;
 
 namespace Solution
 {
@@ -13,13 +15,13 @@ namespace Solution
         protected bool isAlive;
         protected bool isFreeze;
 
-        public SpriteRenderer spriteRenderer; // ลาก SpriteRenderer ของตัวละครมาใส่ใน Inspector
+        public SpriteRenderer spriteRenderer; // ๏ฟฝาก SpriteRenderer ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะค๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Inspector
 
-        // สีที่เราจะใช้ 3 ระดับ
+        // ๏ฟฝีท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ 3 ๏ฟฝะดับ
         [Header("color energy")]
-        public Color normalColor = Color.white;    // สีปกติ
-        public Color damagedColor1 = Color.yellow; // ได้รับความเสียหายระดับ 1 (เช่น HP เหลือ 66%)
-        public Color damagedColor2 = Color.red;    // ได้รับความเสียหายระดับ 2 (เช่น HP เหลือ 33%)
+        public Color normalColor = Color.white;    // ๏ฟฝีป๏ฟฝ๏ฟฝ๏ฟฝ
+        public Color damagedColor1 = Color.yellow; // ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะดับ 1 (๏ฟฝ๏ฟฝ HP ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ 66%)
+        public Color damagedColor2 = Color.red;    // ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะดับ 2 (๏ฟฝ๏ฟฝ HP ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ 33%)
 
         public override void SetUP()
         {
@@ -30,14 +32,14 @@ namespace Solution
             spriteRenderer = GetComponent<SpriteRenderer>();
             energy = maxEnergy;
 
-            UpdateSpriteColorBasedOnHealth(); // เริ่มต้นด้วยการตั้งค่าสีตามพลังชีวิตปัจจุบัน
+            UpdateSpriteColorBasedOnHealth(); // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ้นด๏ฟฝ๏ฟฝยก๏ฟฝรต๏ฟฝ้งค๏ฟฝ๏ฟฝ๏ฟฝีต๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝิต๏ฟฝัจ๏ฟฝุบัน
         }
         protected void GetRemainEnergy()
         {
             Debug.Log(name + " : " + energy);
         }
 
-        public virtual void Move(Vector2 direction)
+        public virtual void Move(Vector3 direction)
         {
             if (isFreeze == true)
             {
@@ -58,6 +60,17 @@ namespace Solution
                 TakeDamage(1);
             }
 
+            if (HasPlacement(toX, toY))
+            {
+                Debug.Log("Can't move");
+                Identity identity = mapGenerator.GetMapData(toX,toY);
+                identity.Hit(this);
+            }
+            else
+            {
+                mapGenerator.UpdatePositionIdentity(this,toX,toY);
+               TakeDamage(1);
+            }
         }
 
         public virtual void UpdatePosition(int toX, int toY)
@@ -69,13 +82,12 @@ namespace Solution
             mapGenerator.mapdata[positionX, positionY] = this;
         }
 
-        // hasPlacement คืนค่า true ถ้ามีการวางอะไรไว้บน map ที่ตำแหน่ง x,y
+        // hasPlacement ๏ฟฝืน๏ฟฝ๏ฟฝ๏ฟฝ true ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝีก๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ้บน map ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ x,y
         public bool HasPlacement(int x, int y)
         {
-            var mapData = mapGenerator.GetMapData(x, y);
-            return mapData != null;
+            var cell = mapGenerator.GetMapData(x, y);
+            return cell != null;
         }
-      
 
         public virtual void TakeDamage(int Damage)
         {
@@ -94,13 +106,11 @@ namespace Solution
             UpdateSpriteColorBasedOnHealth();
             CheckDead();
         }
-
-
         public void Heal(int healPoint)
         {
             // energy += healPoint;
             // Debug.Log("Current Energy : " + energy);
-            // เราสามารถเรียกใช้ฟังก์ชัน Heal โดยกำหนดให้ Bonuse = false ได้ เพื่อที่จะให้ logic ในการ heal อยู่ที่ฟังก์ชัน Heal อันเดียวและไม่ต้องเขียนซ้ำ
+            // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรถ๏ฟฝ๏ฟฝ๏ฟฝยก๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝัน Heal ๏ฟฝยก๏ฟฝหน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Bonuse = false ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝอท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ logic ในก๏ฟฝ๏ฟฝ heal ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝัน Heal ๏ฟฝัน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝยน๏ฟฝ๏ฟฝ๏ฟฝ
             Heal(healPoint, false);
         }
 
@@ -128,15 +138,15 @@ namespace Solution
 
             float healthPercentage = (float)energy / maxEnergy;
 
-            if (healthPercentage > 0.66f) // มากกว่า 66% (เช่น 67%-100%)
+            if (healthPercentage > 0.66f) // ๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ 66% (๏ฟฝ๏ฟฝ 67%-100%)
             {
                 spriteRenderer.color = normalColor;
             }
-            else if (healthPercentage > 0.33f) // มากกว่า 33% แต่ไม่เกิน 66% (เช่น 34%-66%)
+            else if (healthPercentage > 0.33f) // ๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ 33% ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝิน 66% (๏ฟฝ๏ฟฝ 34%-66%)
             {
                 spriteRenderer.color = damagedColor1;
             }
-            else // 33% หรือน้อยกว่า
+            else // 33% ๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝ๏ฟฝยก๏ฟฝ๏ฟฝ๏ฟฝ
             {
                 spriteRenderer.color = damagedColor2;
             }
