@@ -1,15 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AssignmentSystem.Services;
+using NUnit.Framework;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using Debug = AssignmentSystem.Services.AssignmentDebugConsole;
 
 namespace Assignment03
 {
-    public class StudentSolution : MonoBehaviour, IAssignment
+    public class StudentSolutions : MonoBehaviour, IAssignment
     {
         #region Lecture
 
@@ -112,9 +114,43 @@ namespace Assignment03
 
         public void LCT03_SyntaxDictionary()
         {
-            throw new System.NotImplementedException();
+            Dictionary<int,String> dictionary = new Dictionary<int, string>();
+
+            dictionary.Add(1,"Apple");
+            dictionary.Add(2,"Banana");
+            dictionary[3] = "Cherry";
+            LCT03_Prindictionary(dictionary);
+
+            int keyTocheck = 1;
+            bool hasKey = dictionary.ContainsKey(keyTocheck);
+            Debug.Log($"has key {keyTocheck} : {hasKey}");
+            if(hasKey)
+            {
+                string value = dictionary[keyTocheck];
+                Debug.Log($"value of key {keyTocheck} : {value}");
+            }
+
+            Debug.Log("All keys in dictionary:");
+            foreach(int key in dictionary.Keys)
+            {
+                Debug.Log(key);
+            }
+
+            int keyToRemove = 1;
+            dictionary.Remove(keyToRemove);
+            LCT03_Prindictionary(dictionary);
+
+            dictionary.Clear();
         }
 
+        private void LCT03_Prindictionary(Dictionary<int,String> dictionary)
+        {
+            Debug.Log($"Dictionary has {dictionary.Count} keys");
+            foreach(KeyValuePair<int,string> entry in dictionary)
+            {
+                Debug.Log($"Key: {entry.Key}, Value: {entry.Value}");
+            }
+        }
         #endregion
 
         #region Assignment

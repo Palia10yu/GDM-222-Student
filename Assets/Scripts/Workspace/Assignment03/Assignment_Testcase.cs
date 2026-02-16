@@ -20,7 +20,7 @@ namespace Assignment03
             AssignmentDebugConsole.Clear();
 
             // Use FinalSolution as the test subject
-            assignment = new StudentSolution();
+            assignment = new StudentSolutions();
         }
 
         [TearDown]
